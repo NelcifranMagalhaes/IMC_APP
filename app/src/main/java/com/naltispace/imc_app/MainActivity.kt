@@ -4,7 +4,6 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -27,23 +26,21 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.naltispace.imc_app.ui.theme.IMC_APPTheme
@@ -69,22 +66,22 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun IMCScreen() {
-    var input_weight = remember {
+    val inputWeight = remember {
         mutableStateOf("")
     }
-    var input_height = remember {
-        mutableStateOf("")
-    }
-
-    var imc_result = remember {
-        mutableStateOf(0.0)
-    }
-
-    var imc_status = remember {
+    val inputHeight = remember {
         mutableStateOf("")
     }
 
-    var result_card_color = remember {
+    val imcResult = remember {
+        mutableDoubleStateOf(0.0)
+    }
+
+    val imcStatus = remember {
+        mutableStateOf("")
+    }
+
+    val resultCardColor = remember {
         mutableStateOf(Color.Gray)
     }
 
@@ -157,9 +154,9 @@ fun IMCScreen() {
                             color = colorResource(id = R.color.new_red)
                         )
                         OutlinedTextField(
-                            value = input_weight.value,
+                            value = inputWeight.value,
                             onValueChange = {
-                                input_weight.value = it
+                                inputWeight.value = it
                             },
                             modifier = Modifier.fillMaxWidth(),
                             placeholder = {
@@ -181,9 +178,9 @@ fun IMCScreen() {
                             color = colorResource(id = R.color.new_red)
                         )
                         OutlinedTextField(
-                            value = input_height.value,
+                            value = inputHeight.value,
                             onValueChange = {
-                                input_height.value = it
+                                inputHeight.value = it
                             },
                             modifier = Modifier.fillMaxWidth(),
                             placeholder = {
@@ -201,13 +198,13 @@ fun IMCScreen() {
                         Spacer(modifier = Modifier.height(16.dp))
                         Button(
                             onClick = {
-                                if ( input_height.value.isNotBlank() || input_weight.value.isNotBlank()){
-                                    imc_result.value = calculateImc(
-                                        input_weight.value.toDouble(),
-                                        input_height.value.toDouble()
+                                if ( inputHeight.value.isNotBlank() || inputWeight.value.isNotBlank()){
+                                    imcResult.doubleValue = calculateImc(
+                                        inputWeight.value.toDouble(),
+                                        inputHeight.value.toDouble()
                                     )
-                                    imc_status.value = getStatusImc(imc_result.value)
-                                    result_card_color.value = cardColor(imc_status.value)
+                                    imcStatus.value = getStatusImc(imcResult.doubleValue)
+                                    resultCardColor.value = cardColor(imcStatus.value)
                                 }
                             },
                             modifier = Modifier
@@ -226,10 +223,10 @@ fun IMCScreen() {
                         Spacer(modifier = Modifier.height(16.dp))
                         Button(
                             onClick = {
-                                input_weight.value= ""
-                                input_height.value = ""
-                                imc_status.value = ""
-                                imc_result.value = 0.0
+                                inputWeight.value= ""
+                                inputHeight.value = ""
+                                imcStatus.value = ""
+                                imcResult.doubleValue = 0.0
 
                             },
                             modifier = Modifier
@@ -256,9 +253,9 @@ fun IMCScreen() {
             modifier = Modifier
                 .fillMaxWidth()
                 .height(200.dp)
-                .padding(horizontal = 32.dp, vertical = 8.dp)
+                .padding(horizontal = 32.dp, vertical = 20.dp)
                 .align(Alignment.BottomCenter),
-            colors = CardDefaults.cardColors(containerColor = result_card_color.value),
+            colors = CardDefaults.cardColors(containerColor = resultCardColor.value),
             elevation = CardDefaults.cardElevation(4.dp),
             //border = BorderStroke(width = 1.dp, Color(0xffed145b))
         ) {
@@ -275,14 +272,14 @@ fun IMCScreen() {
                         fontSize = 14.sp
                     )
                     Text(
-                        text = imc_status.value,
+                        text = imcStatus.value,
                         fontWeight = FontWeight.Bold,
                         color = Color.White,
                         fontSize = 15.sp
                     )
                 }
                 Text(
-                    text = String.format(Locale.US, "%.1f", imc_result.value),
+                    text = String.format(Locale.US, "%.1f", imcResult.doubleValue),
                     modifier = Modifier.fillMaxWidth(),
                     fontWeight = FontWeight.Bold,
                     color = Color.White,

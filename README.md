@@ -1,2 +1,2 @@
 ## A little app to calculate IMC
-![alt text](app_screen.gif)
+![alt text](screen_app.png)
